@@ -17,20 +17,20 @@ import RealityKitContent
 struct GameView: View {
     @State private var engine: GameEngine
     // no more selectedWord since drag carries the word directly
-
+    
     init(animal: String) {
         _engine = State(wrappedValue: GameEngine(animal: animal))
     }
-
+    
     var body: some View {
         VStack(spacing: 30) {
             Text("Build the sentence word by word!")
                 .font(.largeTitle)
                 .multilineTextAlignment(.center)
-
+            
             Text("Level \(engine.currentLevel + 1)")
                 .font(.headline)
-
+            
             // 1) Slots as drop destinations
             HStack(spacing: 8) {
                 ForEach(0..<engine.currentSentence.count, id: \.self) { index in
@@ -50,19 +50,19 @@ struct GameView: View {
                         RoundedRectangle(cornerRadius: 8)
                             .stroke(
                                 index == engine.currentStep
-                                    ? Color.blue
-                                    : Color.gray.opacity(0.3),
+                                ? Color.blue
+                                : Color.gray.opacity(0.3),
                                 lineWidth: 2
                             )
                     )
                 }
             }
-
+            
             // 2) Feedback
             Text(engine.feedback)
                 .font(.title2)
                 .foregroundColor(engine.feedback == "Correct!" ? .green : .red)
-
+            
             // 3) Word bank with draggable tokens
             HStack(spacing: 12) {
                 ForEach(engine.availableWords, id: \.self) { word in
@@ -75,7 +75,7 @@ struct GameView: View {
                         .draggable(word)
                 }
             }
-
+            
             // 4) Controls
             if engine.currentStep == engine.currentSentence.count {
                 Button("Next Level") {
@@ -83,10 +83,17 @@ struct GameView: View {
                 }
                 .buttonStyle(.borderedProminent)
             }
-
+            
             Button("Reset Level", role: .destructive) {
                 engine.resetLevel()
             }
+            
+            // 5) Navigation to TestView
+            NavigationLink(destination: TestView()) {
+                Text("Go to Test View")
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(.blue)
         }
         .padding()
         .navigationTitle("Sentence Builder")
@@ -97,7 +104,7 @@ struct GameView: View {
 struct SelectableDropTargetView: View {
     @Binding var word: String?
     let hint: String
-
+    
     var body: some View {
         RoundedRectangle(cornerRadius: 8)
             .stroke(Color.gray, lineWidth: 2)
